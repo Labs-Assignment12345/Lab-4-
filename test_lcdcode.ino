@@ -16,9 +16,9 @@
 #define lcd_FunctionSet4bit 0b00101000          // 4-bit data, 2-line display, 5 x 7 font
 #define lcd_SetCursor       0b10000000          // set the cursor position
 
-volatile float adc_value1 = 0;
-volatile float adc_value2 = 0;
-volatile float adc_value3 = 0;
+volatile int adc_value1 = 0;
+volatile int adc_value2 = 0;
+volatile int adc_value3 = 0;
 volatile uint8_t low = 0, high = 0;
 
 float temp_coeff = 0.22;
@@ -82,7 +82,6 @@ void lcd_write_data(uint8_t data){
 
 void lcd_initialize(){
   _delay_ms(40);
-  lcd_write_instruct_8bit(lcd_FunctionReset);
   lcd_write_instruct_8bit(0B00100000);
   lcd_write_instruct_4bit(lcd_FunctionSet4bit);
   lcd_write_instruct_4bit(lcd_EntryMode);
