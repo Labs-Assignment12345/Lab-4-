@@ -44,7 +44,7 @@
 
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
-const int rs = PB0, en = PB2, d4 = PD4, d5 = PD5, d6 = PD6, d7 = PD7;
+const int rs = 8, en = 10, d4 = 4, d5 = 5, d6 = 6, d7 = 7;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 void setup() {
@@ -55,6 +55,8 @@ void setup() {
 }
 
 void loop() {
+  DDRB |= (1<<PB1);
+  PORTB &= ~(1<<PB1);
   // Turn off the display:
   lcd.noDisplay();
   delay(500);
