@@ -82,7 +82,6 @@ void lcd_write_data(uint8_t data){
 
 void lcd_initialize(){
   _delay_ms(40);
-  lcd_write_instruct_8bit(lcd_FunctionReset);
   lcd_write_instruct_8bit(0B00100000);
   lcd_write_instruct_4bit(lcd_FunctionSet4bit);
   lcd_write_instruct_4bit(lcd_EntryMode);
