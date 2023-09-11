@@ -31,6 +31,7 @@ void lcd_write_instruct_8bit(uint8_t instruction){
   PORTB &= ~(1<<RW);
   _delay_ms(1);
   DATA_OUT = instruction;
+  _delay_ms(1);
   PORTB |= (1<<E);
   _delay_ms(1); //tpw
   PORTB &= ~(1<<E);
@@ -45,12 +46,14 @@ void lcd_write_instruct_4bit(uint8_t instruction){
   PORTB &= ~(1<<RW);
   _delay_ms(1);
   DATA_OUT = instruction;
+  _delay_ms(1);
   PORTB |= (1<<E);
   _delay_ms(1);
   PORTB &= ~(1<<E);
   _delay_ms(1);
   
   DATA_OUT = (instruction << 4);
+  _delay_ms(1);
   PORTB |= (1<<E);
   _delay_ms(1);
   PORTB &= ~(1<<E);
@@ -67,12 +70,14 @@ void lcd_write_data(uint8_t data){
   
   _delay_ms(1);
   DATA_OUT = data;
+  _delay_ms(1);
   PORTB |= (1<<E);
   _delay_ms(1);
   PORTB &= ~(1<<E);
   
    _delay_ms(1);
   DATA_OUT = (data << 4);
+  _delay_ms(1);
   PORTB |= (1<<E);
   _delay_ms(1);
   PORTB &= ~(1<<E);  
