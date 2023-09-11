@@ -16,9 +16,9 @@
 #define lcd_FunctionSet4bit 0b00101000          // 4-bit data, 2-line display, 5 x 7 font
 #define lcd_SetCursor       0b10000000          // set the cursor position
 
-volatile int adc_value1 = 0;
-volatile int adc_value2 = 0;
-volatile int adc_value3 = 0;
+volatile float adc_value1 = 0;
+volatile float adc_value2 = 0;
+volatile float adc_value3 = 0;
 volatile uint8_t low = 0, high = 0;
 
 float temp_coeff = 0.22;
@@ -82,6 +82,7 @@ void lcd_write_data(uint8_t data){
 
 void lcd_initialize(){
   _delay_ms(40);
+  lcd_write_instruct_8bit(lcd_FunctionReset);
   lcd_write_instruct_8bit(0B00100000);
   lcd_write_instruct_4bit(lcd_FunctionSet4bit);
   lcd_write_instruct_4bit(lcd_EntryMode);
@@ -91,12 +92,9 @@ void lcd_initialize(){
 
 
   lcd_write_instruct_4bit(0x80);
-  write_string("Voltage=");
+  write_string("V=");
 
   lcd_write_instruct_4bit(0xC0);
-  write_string("Current=");
-
-  lcd_write_instruct_4bit(0x94);
   write_string("Temp=");
 
 }
@@ -180,7 +178,7 @@ ISR(ADC_vect){
     adc_value1 = float((high << 8) | low);
     adc_value1 = float(5*adc_value1)/1024;
     adc_value1 = adc_value1/0.05;
-    lcd_write_instruct_4bit(0x88);
+    lcd_write_instruct_4bit(0x82);
     
     write_value(adc_value1);
     write_string("V");
@@ -195,7 +193,7 @@ ISR(ADC_vect){
     adc_value3 = float(5*adc_value3)/1024;
     adc_value3 = adc_value3/0.01;
     //fan_on();
-    lcd_write_instruct_4bit(0x98);
+    lcd_write_instruct_4bit(0xC6);
     write_value(adc_value3);
     write_string(" Celsius");    
     ADMUX = 0x42;
@@ -210,11 +208,12 @@ ISR(ADC_vect){
     adc_value2 = float(5*adc_value2)/1024;
     V_iout = adc_value2;
     I_p = (V_iout - 2.5)/temp_coeff;
-    lcd_write_instruct_4bit(0xC8);
-    I_p = I_p/0.001;
+    //I_p = I_p/0.001;
     
+    lcd_write_instruct_4bit(0x88);
+    write_string(" I=");
     write_value(I_p);
-    write_string("mA");
+    write_string("A");
     ADMUX = 0x40;
     _delay_ms(10);
   }
