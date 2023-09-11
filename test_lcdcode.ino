@@ -100,6 +100,7 @@ void write_value(float value){
 void write_string(String sentence){
   for(int i=0; sentence[i]!='\0'; i++){
     lcd_write_data(uint8_t(sentence[i]));
+    _delay_ms(20);
   }
   
 }
