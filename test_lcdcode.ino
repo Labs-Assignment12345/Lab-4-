@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #define RS PB0
 #define RW PB1
 #define E PB2
@@ -84,17 +88,11 @@ void lcd_initialize(){
   lcd_write_instruct_4bit(lcd_EntryMode);
   lcd_write_instruct_4bit(lcd_SetCursor);
 
-  lcd_write_instruct_4bit(0x80);
-  write_string("Voltage=");
-
-  lcd_write_instruct_4bit(0xC0);
-  write_string("Current=");
-
 }
 
 void write_value(float value){
   char buf[20];
-  dtostrf(value, 3, 3, buf);
+  dtostrf(value, 3, 1, buf);
   write_string(buf);
   
 }
@@ -152,7 +150,7 @@ int main(void){
   sei();
   
   lcd_initialize();
-  _delay_ms(50);
+  _delay_ms(500);
   init_ADC();
   
   while(1){
@@ -170,12 +168,15 @@ ISR(ADC_vect){
     adc_value1 = float((high << 8) | low);
     adc_value1 = float(5*adc_value1)/1024;
     adc_value1 = adc_value1/0.05;
-    lcd_write_instruct_4bit(0x88);
     
+    lcd_write_instruct_4bit(0x80);
+    write_string("Voltage=");
+    lcd_write_instruct_4bit(0x88);
     write_value(adc_value1);
     write_string("V");
+    
     ADMUX = 0x41;
-    _delay_ms(100);
+    _delay_ms(50);
   }
 
   else if(ADMUX == 0x41){
@@ -184,13 +185,13 @@ ISR(ADC_vect){
     adc_value3 = float((high << 8) | low);
     adc_value3 = float(5*adc_value3)/1024;
     adc_value3 = adc_value3/0.01;
-    //fan_on();
+    fan_on();
     lcd_write_instruct_4bit(0x94);
     write_string("Temp=");
     write_value(adc_value3);
     write_string(" Celsius");    
     ADMUX = 0x42;
-    _delay_ms(100);
+    _delay_ms(50);
   }
 
   else if(ADMUX == 0x42){
@@ -201,13 +202,16 @@ ISR(ADC_vect){
     adc_value2 = float(5*adc_value2)/1024;
     V_iout = adc_value2;
     I_p = (V_iout - 2.5)/temp_coeff;
+    
+    lcd_write_instruct_4bit(0xC0);
+    write_string("Current=");    
     lcd_write_instruct_4bit(0xC8);
     I_p = I_p/0.001;
-    
     write_value(I_p);
     write_string("mA");
+    
     ADMUX = 0x40;
-    _delay_ms(100);
+    _delay_ms(50);
   }
     ADCSRA |= (1<<ADSC);
 }
