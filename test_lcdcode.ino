@@ -163,6 +163,7 @@ int main(void){
   init_ADC();
   
   while(1){
+    _delay_ms(50);
   }
   return 0;
 }
@@ -220,5 +221,4 @@ ISR(ADC_vect){
     ADMUX = 0x40;
     _delay_ms(50);
   }
-    ADCSRA |= (1<<ADSC);
 }
