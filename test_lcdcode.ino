@@ -104,7 +104,7 @@ void lcd_initialize(){
 
 void write_value(float value){
   char buf[20];
-  dtostrf(value, 3, 3, buf);
+  dtostrf(value, 3, 1, buf);
   write_string(buf);
   
 }
