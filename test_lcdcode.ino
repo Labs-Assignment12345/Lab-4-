@@ -19,7 +19,7 @@
 volatile float adc_value1 = 0;
 volatile float adc_value2 = 0;
 volatile float adc_value3 = 0;
-volatile uint8_t low, high;
+volatile uint8_t low = 0, high = 0;
 
 float temp_coeff = 0.22;
 float V_iout = 0;
