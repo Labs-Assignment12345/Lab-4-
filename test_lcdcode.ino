@@ -88,7 +88,7 @@ void lcd_initialize(){
   lcd_write_instruct_4bit(lcd_EntryMode);
   lcd_write_instruct_4bit(lcd_SetCursor);
   lcd_write_instruct_4bit(lcd_DisplayOn);
-  lcd_wrte_instruct_4bit(lcd_Clear);
+  lcd_write_instruct_4bit(lcd_Clear);
 
 
   lcd_write_instruct_4bit(0x80);
