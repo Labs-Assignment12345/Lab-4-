@@ -175,7 +175,7 @@ ISR(ADC_vect){
     
     adc_value1 = float((high << 8) | low);
     adc_value1 = float(5*adc_value1)/1024;
-    adc_value1 = adc_value1/0.05;
+    adc_value1 = adc_value1*4;
     lcd_write_instruct_4bit(0x82);
     
     write_value(adc_value1);
