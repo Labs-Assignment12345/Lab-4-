@@ -29,13 +29,12 @@ float I_p = 0;
 void lcd_write_instruct_8bit(uint8_t instruction){
   PORTB &= ~(1<<RS);
   PORTB &= ~(1<<RW);
-  _delay_ms(1);
+  _delay_us(1);
   DATA_OUT = instruction;
-
   PORTB |= (1<<E);
-  _delay_ms(1); //tpw
+  _delay_us(150); //tpw
   PORTB &= ~(1<<E);
-  _delay_ms(1);
+  _delay_us(1);
   PORTB |= (1<<RS);
   PORTB |= (1<<RW);
 }
@@ -43,20 +42,18 @@ void lcd_write_instruct_8bit(uint8_t instruction){
 void lcd_write_instruct_4bit(uint8_t instruction){
   PORTB &= ~(1<<RS);
   PORTB &= ~(1<<RW);
-  _delay_ms(1);
+  _delay_us(1);
   DATA_OUT = instruction;
-
   PORTB |= (1<<E);
-  _delay_ms(1);
+  _delay_us(150);
   PORTB &= ~(1<<E);
-  _delay_ms(1);
+  _delay_us(150);
   
   DATA_OUT = (instruction << 4);
-
   PORTB |= (1<<E);
-  _delay_ms(1);
+  _delay_us(150);
   PORTB &= ~(1<<E);
-  _delay_ms(1);
+  _delay_us(1);
   
   PORTB |= (1<<RS);
   PORTB |= (1<<RW); 
@@ -66,21 +63,19 @@ void lcd_write_data(uint8_t data){
   PORTB |= (1<<RS);
   PORTB &= ~(1<<RW);
   
-  _delay_ms(1);
+  _delay_us(1);
   DATA_OUT = data;
-
   PORTB |= (1<<E);
-  _delay_ms(1);
+  _delay_us(150);
   PORTB &= ~(1<<E);
   
-  _delay_ms(1);
+   _delay_us(1);
   DATA_OUT = (data << 4);
-
   PORTB |= (1<<E);
-  _delay_ms(1);
+  _delay_us(150);
   PORTB &= ~(1<<E);  
 
-  _delay_ms(1);
+  _delay_us(1);
   PORTB |= (1<<RS);
   PORTB |= (1<<RW);
 }
@@ -92,21 +87,18 @@ void lcd_initialize(){
   lcd_write_instruct_4bit(lcd_DisplayOn);
   lcd_write_instruct_4bit(lcd_EntryMode);
   lcd_write_instruct_4bit(lcd_SetCursor);
-  
+
   lcd_write_instruct_4bit(0x80);
   write_string("Voltage=");
 
   lcd_write_instruct_4bit(0xC0);
   write_string("Current=");
-  
-  lcd_write_instruct_4bit(0x94);
-  write_string("Temp=");
 
 }
 
 void write_value(float value){
   char buf[20];
-  dtostrf(value, 3, 1, buf);
+  dtostrf(value, 3, 3, buf);
   write_string(buf);
   
 }
@@ -114,7 +106,6 @@ void write_value(float value){
 void write_string(String sentence){
   for(int i=0; sentence[i]!='\0'; i++){
     lcd_write_data(uint8_t(sentence[i]));
-    _delay_ms(5);
   }
   
 }
@@ -165,10 +156,12 @@ int main(void){
   sei();
   
   lcd_initialize();
-  _delay_ms(50);
+  _delay_ms(100);
   init_ADC();
+  _delay_ms(50);
   
   while(1){
+    _delay_ms(10);
   }
   return 0;
 }
@@ -183,9 +176,9 @@ ISR(ADC_vect){
     adc_value1 = float(5*adc_value1)/1024;
     adc_value1 = adc_value1/0.05;
     lcd_write_instruct_4bit(0x88);
+    
     write_value(adc_value1);
     write_string("V");
-    
     ADMUX = 0x41;
     _delay_ms(10);
   }
@@ -197,7 +190,8 @@ ISR(ADC_vect){
     adc_value3 = float(5*adc_value3)/1024;
     adc_value3 = adc_value3/0.01;
     fan_on();
-    lcd_write_instruct_4bit(0x97);
+    lcd_write_instruct_4bit(0x94);
+    write_string("Temp=");
     write_value(adc_value3);
     write_string(" Celsius");    
     ADMUX = 0x42;
@@ -212,13 +206,13 @@ ISR(ADC_vect){
     adc_value2 = float(5*adc_value2)/1024;
     V_iout = adc_value2;
     I_p = (V_iout - 2.5)/temp_coeff;
-    
     lcd_write_instruct_4bit(0xC8);
     I_p = I_p/0.001;
+    
     write_value(I_p);
     write_string("mA");
-    
     ADMUX = 0x40;
     _delay_ms(10);
   }
+    ADCSRA |= (1<<ADSC);
 }
