@@ -82,11 +82,14 @@ void lcd_write_data(uint8_t data){
 
 void lcd_initialize(){
   _delay_ms(40);
+  lcd_write_instruct_8bit(lcd_FunctionReset);
   lcd_write_instruct_8bit(0B00100000);
   lcd_write_instruct_4bit(lcd_FunctionSet4bit);
-  lcd_write_instruct_4bit(lcd_DisplayOn);
   lcd_write_instruct_4bit(lcd_EntryMode);
   lcd_write_instruct_4bit(lcd_SetCursor);
+  lcd_write_instruct_4bit(lcd_DisplayOn);
+  lcd_wrte_instruct_4bit(lcd_Clear);
+
 
   lcd_write_instruct_4bit(0x80);
   write_string("Voltage=");
@@ -94,11 +97,14 @@ void lcd_initialize(){
   lcd_write_instruct_4bit(0xC0);
   write_string("Current=");
 
+  lcd_write_instruct_4bit(0x94);
+  write_string("Temp=");
+
 }
 
 void write_value(float value){
   char buf[20];
-  dtostrf(value, 3, 1, buf);
+  dtostrf(value, 3, 3, buf);
   write_string(buf);
   
 }
@@ -189,9 +195,8 @@ ISR(ADC_vect){
     adc_value3 = float((high << 8) | low);
     adc_value3 = float(5*adc_value3)/1024;
     adc_value3 = adc_value3/0.01;
-    fan_on();
-    lcd_write_instruct_4bit(0x94);
-    write_string("Temp=");
+    //fan_on();
+    lcd_write_instruct_4bit(0x98);
     write_value(adc_value3);
     write_string(" Celsius");    
     ADMUX = 0x42;
