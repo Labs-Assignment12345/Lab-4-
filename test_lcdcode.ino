@@ -156,6 +156,7 @@ int main(void){
   init_ADC();
   
   while(1){
+    _delay_ms(100);
   }
   return 0;
 }
@@ -174,7 +175,7 @@ ISR(ADC_vect){
     write_value(adc_value1);
     write_string("V");
     ADMUX = 0x41;
-    _delay_ms(10);
+    _delay_ms(100);
   }
 
   else if(ADMUX == 0x41){
@@ -183,13 +184,13 @@ ISR(ADC_vect){
     adc_value3 = float((high << 8) | low);
     adc_value3 = float(5*adc_value3)/1024;
     adc_value3 = adc_value3/0.01;
-    fan_on();
+    //fan_on();
     lcd_write_instruct_4bit(0x94);
     write_string("Temp=");
     write_value(adc_value3);
     write_string(" Celsius");    
     ADMUX = 0x42;
-    _delay_ms(10);
+    _delay_ms(100);
   }
 
   else if(ADMUX == 0x42){
@@ -206,7 +207,7 @@ ISR(ADC_vect){
     write_value(I_p);
     write_string("mA");
     ADMUX = 0x40;
-    _delay_ms(10);
+    _delay_ms(100);
   }
     ADCSRA |= (1<<ADSC);
 }
