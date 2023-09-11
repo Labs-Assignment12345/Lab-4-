@@ -37,7 +37,6 @@ void lcd_write_instruct_8bit(uint8_t instruction){
   PORTB &= ~(1<<E);
   _delay_ms(1);
   PORTB |= (1<<RS);
-  _delay_ms(1);
   PORTB |= (1<<RW);
 }
 
@@ -60,7 +59,6 @@ void lcd_write_instruct_4bit(uint8_t instruction){
   _delay_ms(1);
   
   PORTB |= (1<<RS);
-_delay_ms(1);
   PORTB |= (1<<RW); 
 }
 
@@ -75,7 +73,7 @@ void lcd_write_data(uint8_t data){
   _delay_ms(1);
   PORTB &= ~(1<<E);
   
-   _delay_ms(1);
+  _delay_ms(1);
   DATA_OUT = (data << 4);
   _delay_ms(1);
   PORTB |= (1<<E);
@@ -84,7 +82,6 @@ void lcd_write_data(uint8_t data){
 
   _delay_ms(1);
   PORTB |= (1<<RS);
-  _delay_ms(1);
   PORTB |= (1<<RW);
 }
 
@@ -95,6 +92,15 @@ void lcd_initialize(){
   lcd_write_instruct_4bit(lcd_DisplayOn);
   lcd_write_instruct_4bit(lcd_EntryMode);
   lcd_write_instruct_4bit(lcd_SetCursor);
+  
+  lcd_write_instruct_4bit(0x80);
+  write_string("Voltage=");
+
+  lcd_write_instruct_4bit(0xC0);
+  write_string("Current=");
+  
+  lcd_write_instruct_4bit(0x94);
+  write_string("Temp=");
 
 }
 
@@ -163,7 +169,6 @@ int main(void){
   init_ADC();
   
   while(1){
-    _delay_ms(50);
   }
   return 0;
 }
@@ -177,14 +182,12 @@ ISR(ADC_vect){
     adc_value1 = float((high << 8) | low);
     adc_value1 = float(5*adc_value1)/1024;
     adc_value1 = adc_value1/0.05;
-    
-    lcd_write_instruct_4bit(0x81);
-    write_string("Voltage=");
+    lcd_write_instruct_4bit(0x88);
     write_value(adc_value1);
     write_string("V");
     
     ADMUX = 0x41;
-    _delay_ms(50);
+    _delay_ms(10);
   }
 
   else if(ADMUX == 0x41){
@@ -194,12 +197,11 @@ ISR(ADC_vect){
     adc_value3 = float(5*adc_value3)/1024;
     adc_value3 = adc_value3/0.01;
     fan_on();
-    lcd_write_instruct_4bit(0x94);
-    write_string("Temp=");
+    lcd_write_instruct_4bit(0x97);
     write_value(adc_value3);
     write_string(" Celsius");    
     ADMUX = 0x42;
-    _delay_ms(50);
+    _delay_ms(10);
   }
 
   else if(ADMUX == 0x42){
@@ -211,14 +213,12 @@ ISR(ADC_vect){
     V_iout = adc_value2;
     I_p = (V_iout - 2.5)/temp_coeff;
     
-    lcd_write_instruct_4bit(0xC0);
-    write_string("Current=");    
     lcd_write_instruct_4bit(0xC8);
     I_p = I_p/0.001;
     write_value(I_p);
     write_string("mA");
     
     ADMUX = 0x40;
-    _delay_ms(50);
+    _delay_ms(10);
   }
 }
