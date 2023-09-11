@@ -141,7 +141,7 @@ void fan_on(){
   }
 }
 
-void main(void){
+int main(void){
   DDRB |= (1<< RS);
   DDRB |= (1<< RW);
   DDRB |= (1<<E);
@@ -164,6 +164,7 @@ void main(void){
   
   while(1){
   }
+  return 0;
 }
 
 ISR(ADC_vect){
